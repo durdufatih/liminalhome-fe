@@ -8,7 +8,7 @@ function LoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5001/api/auth/login', {
+      const response = await axios.post('https://liminalhome-be.onrender.com/api/auth/login', {
         email,
         password,
       });

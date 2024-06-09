@@ -13,7 +13,7 @@ function ListingForm() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5001/api/listings',
+        'https://liminalhome-be.onrender.com/api/listings',
         {
           title,
           description,

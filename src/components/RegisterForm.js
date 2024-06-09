@@ -9,7 +9,7 @@ function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/auth/register', {
+      await axios.post('https://liminalhome-be.onrender.com/api/auth/register', {
         name,
         email,
         password,

@@ -9,7 +9,7 @@ function Listings() {
 
   const fetchListings = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/listings', {
+      const response = await axios.get('https://liminalhome-be.onrender.com/api/listings', {
         params: {
           city,
           startDate,
