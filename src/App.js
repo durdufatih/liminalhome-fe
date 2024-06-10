@@ -8,7 +8,7 @@ import Listings from './components/Listings';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="">
         <Routes>
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
