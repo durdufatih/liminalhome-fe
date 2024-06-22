@@ -36,3 +36,13 @@
     transform: rotate(360deg);
   }
 }
+
+.listings-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
