@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 function ListingForm() {
+  const location = useLocation(); // useLocation hook'u kullanılır
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [city, setCity] = useState('');
   const [startDate, setStartDate] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown açık/kapalı durumu için state
   const [endDate, setEndDate] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Dropdown açık/kapalı durumu için state
+  const [isUpdating, setIsUpdating] = useState(false); // Güncelleme durumunu kontrol etmek için yeni state
   const token = localStorage.getItem('token'); 
   const name = localStorage.getItem('name'); 
   let navigate = useNavigate();
+
+  // Verileri form state'lerine yüklemek için useEffect kullanılır
+  useEffect(() => {
+
+    if (location.state && location.state.data) {
+      const { title, description, city, availableDates } = location.state.data;
+      setTitle(title);
+      setDescription(description);
+      setCity(city);
+      if (availableDates) {
+        const formattedStartDate = new Date(availableDates.startDate).toISOString().split('T')[0];
+        const formattedEndDate = new Date(availableDates.endDate).toISOString().split('T')[0];
+        setStartDate(formattedStartDate);
+        setEndDate(formattedEndDate);
+      }
+      setIsUpdating(true); // Veri varsa güncelleme moduna geç
+    }
+  }, [location.state]);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen); // Dropdown durumunu değiştir
@@ -22,11 +42,37 @@ function ListingForm() {
     navigate("/login"); // Kullanıcıyı login sayfasına yönlendir
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleUpdate = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
+      const response = await axios.put(
+        `https://liminalhome-be.onrender.com/api/listings/${location.state.data._id}`, // Güncellenecek ilanın ID'si
+        {
+          title,
+          description,
+          city,
+          availableDates: {
+            startDate,
+            endDate,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert('Listing updated successfully!');
+      // İlanın detay sayfasına yönlendirme yapılabilir
+    } catch (error) {
+      alert('Listing update failed!');
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
         'https://liminalhome-be.onrender.com/api/listings',
         {
           title,
@@ -43,11 +89,21 @@ function ListingForm() {
           },
         }
       );
-      alert('Listing created successfully!');
-      navigate("/");
+      alert('Listing saved successfully!');
+      // İlanın detay sayfasına yönlendirme yapılabilir
     } catch (error) {
-      alert('Listing creation failed!');
+      alert('Listing save failed!');
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (isUpdating) {
+      handleUpdate(); // Güncelleme modunda ise güncelleme işlemini yap
+    } else {
+      handleSave(); // Güncelleme modunda değilse yeni ilan oluşturma işlemini yap
+    }
+    navigate('/display');
   };
 
   return (
@@ -76,7 +132,7 @@ function ListingForm() {
       </nav>
       <div className="bg-black bg-opacity-50 h-screen w-full flex flex-col items-center justify-center p-4">
     <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Create Listing</h2>
+      <h2 className="text-2xl font-bold mb-4">{isUpdating ? 'Update Listing' : 'Create Listing'}</h2>
       <input
         type="text"
         value={title}
@@ -125,7 +181,7 @@ function ListingForm() {
         required
       />
       <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-        Create Listing
+        {isUpdating ? 'Update Listing' : 'Create Listing'}
       </button>
     </form>
     </div>

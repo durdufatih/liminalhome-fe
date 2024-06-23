@@ -15,6 +15,7 @@ function App() {
           <Route path="/display" element={<ListingsDisplay />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/create-listing" element={<ListingForm />} />
+          <Route path="/create-listing/:id" element={<ListingForm />} />
           <Route path="/" element={<Listings />} />
         </Routes>
       </div>
